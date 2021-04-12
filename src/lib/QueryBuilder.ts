@@ -78,6 +78,10 @@ export class QueryBuilder {
     return this.offset(nValue)
   }
 
+  getFilter(): QueryFilter | null {
+    return this._oFilter
+  }
+
   filter(oFilter: QueryFilter): QueryBuilder {
     this._oFilter = oFilter
     return this

@@ -207,4 +207,4 @@ fabric.properties
 docs/
 src/
 test/
-!.github/
+.github/
