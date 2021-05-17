@@ -15,6 +15,7 @@ export class QueryBuilder {
   private _bCount = false
   private _nId = 0
   private _bForce = false
+  private _aSelect: string[] = []
 
   constructor(private _sUrl: string, private _oConfig?: QueryBuilderConfig) {
   }
@@ -23,17 +24,17 @@ export class QueryBuilder {
     return this._sUrl
   }
 
-  id(mId: string | number): QueryBuilder {
+  id(mId: string | number): this {
     this._nId = Number(mId)
     return this
   }
 
-  force(): QueryBuilder {
+  force(): this {
     this._bForce = true
     return this
   }
 
-  expand(mEntity: string | string[]): QueryBuilder {
+  expand(mEntity: string | string[]): this {
     if (Array.isArray(mEntity)) {
       this._aExpand = this._aExpand.concat(mEntity)
     } else if (typeof (mEntity) === 'string') {
@@ -42,7 +43,16 @@ export class QueryBuilder {
     return this
   }
 
-  limit(nValue: number): QueryBuilder {
+  select(mField: string | string[]): this {
+    if (Array.isArray(mField)) {
+      this._aSelect = this._aSelect.concat(mField)
+    } else if (typeof (mField) === 'string') {
+      this._aSelect.push(mField)
+    }
+    return this
+  }
+
+  limit(nValue: number): this {
     this._nLimit = nValue
     this._bUseLimit = true
     return this
@@ -53,11 +63,11 @@ export class QueryBuilder {
    * @param nValue
    * @returns {QueryBuilder}
    */
-  top(nValue: number): QueryBuilder {
+  top(nValue: number): this {
     return this.limit(nValue)
   }
 
-  offset(nValue: number): QueryBuilder {
+  offset(nValue: number): this {
     this._nOffset = nValue
     return this
   }
@@ -66,7 +76,7 @@ export class QueryBuilder {
    * @alias offset
    * @param nValue
    */
-  skip(nValue: number): QueryBuilder {
+  skip(nValue: number): this {
     return this.offset(nValue)
   }
 
@@ -74,7 +84,7 @@ export class QueryBuilder {
    * @alias offset
    * @param nValue
    */
-  shift(nValue: number): QueryBuilder {
+  shift(nValue: number): this {
     return this.offset(nValue)
   }
 
@@ -82,12 +92,12 @@ export class QueryBuilder {
     return this._oFilter
   }
 
-  filter(oFilter: QueryFilter): QueryBuilder {
+  filter(oFilter: QueryFilter): this {
     this._oFilter = oFilter
     return this
   }
 
-  order(oOrder: QueryOrder): QueryBuilder {
+  order(oOrder: QueryOrder): this {
     this._aOrder.push(oOrder)
     return this
   }
@@ -97,11 +107,11 @@ export class QueryBuilder {
    * @param oOrder
    * @returns {QueryBuilder}
    */
-  orderby(oOrder: QueryOrder): QueryBuilder {
+  orderby(oOrder: QueryOrder): this {
     return this.order(oOrder)
   }
 
-  page(nPage: number): QueryBuilder {
+  page(nPage: number): this {
     nPage = nPage < 2 ? 1 : nPage
     const nRowsPerPage = this._oConfig?.rowsPerPage ? this._oConfig.rowsPerPage : 10
     const nShift = (nPage - 1) * nRowsPerPage
@@ -109,7 +119,7 @@ export class QueryBuilder {
     return this
   }
 
-  count(): QueryBuilder {
+  count(): this {
     this._bCount = true
     return this
   }
@@ -140,6 +150,10 @@ export class QueryBuilder {
 
     if (this._aExpand.length > 0) {
       aQuery.push('$expand=' + this._aExpand.join(','))
+    }
+
+    if (this._aSelect.length > 0) {
+      aQuery.push('$select=' + this._aSelect.join(','))
     }
 
     if (this._bForce) {

@@ -15,7 +15,7 @@
   * [Filtering](#filtering)
   * [ID](#id)
   * [force](#force)
-* [Version changes](#versio-nchanges)
+  * [select](#select)
 
 
 # Installation
@@ -138,7 +138,11 @@ o.force().build()
 ```
 > Output `/users?$force=true`
 
-# Version changes
-Version|Changes
----|---
-0.1.0|Initial version
+### Select
+Use `select` method to constrain returned fields
+```js
+const o = new QueryBuilder('/users')
+o.select(['id','name']).build()
+```
+
+> Output `/users?$select=id,name`

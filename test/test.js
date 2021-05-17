@@ -117,5 +117,10 @@ describe('oData query builder', function () {
       o.force()
       strictEqual(o.build(), `${sUrl}?$force=true`)
     });
+    it('$select', function () {
+      const o = new QueryBuilder(sUrl)
+      o.select(['id','name'])
+      strictEqual(o.build(), `${sUrl}?$select=id,name`)
+    });
   });
 });
