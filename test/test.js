@@ -91,6 +91,24 @@ describe('oData query builder', function () {
       o.filter(oFilter)
       strictEqual(o.build(), `${sUrl}?$filter=gender eq f and age gt 16`)
     });
+    it("substringof(name, 'ohn') eq true", function () {
+      const o = new QueryBuilder(sUrl)
+      const oFilter = new QueryFilter('name', 'ohn', QueryFilterSign.SUBSTRINGOF)
+      o.filter(oFilter)
+      strictEqual(o.build(), `${sUrl}?$filter=substringof(name, 'ohn') eq true`)
+    });
+    it("startswith(name, 'ohn') eq true", function () {
+      const o = new QueryBuilder(sUrl)
+      const oFilter = new QueryFilter('name', 'ohn', QueryFilterSign.STARTSWITH)
+      o.filter(oFilter)
+      strictEqual(o.build(), `${sUrl}?$filter=startswith(name, 'ohn') eq true`)
+    });
+    it("endswith(name, 'ohn') eq true", function () {
+      const o = new QueryBuilder(sUrl)
+      const oFilter = new QueryFilter('name', 'ohn', QueryFilterSign.ENDSWITH)
+      o.filter(oFilter)
+      strictEqual(o.build(), `${sUrl}?$filter=endswith(name, 'ohn') eq true`)
+    });
   });
 
   describe('Counting', function () {

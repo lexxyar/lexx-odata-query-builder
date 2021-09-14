@@ -104,6 +104,17 @@ o.filter(oFilter).build()
 ```
 > Output `/users?$filter=gender eq f and age gt 16`
 
+#### Filter operations
+- [X] EQ
+- [X] GT
+- [X] GE
+- [X] LT
+- [X] LE
+- [ ] NE
+- [X] SUBSTRINGOF
+- [X] STARTSWITH
+- [X] ENDSWITH
+
 ### Counting
 `count` method will add `$count` suffix to url
 ```js

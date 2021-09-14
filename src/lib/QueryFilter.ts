@@ -4,7 +4,10 @@ export enum QueryFilterSign {
   GE = 'ge',
   LT = 'lt',
   LE = 'le',
-  NE = 'ne'
+  NE = 'ne',
+  SUBSTRINGOF = "substringof",
+  STARTSWITH = "startswith",
+  ENDSWITH = "endswith",
 }
 
 export enum QueryFilterConcatenate {
@@ -67,6 +70,14 @@ export class QueryFilter {
   }
 
   private _toString(bWithConcat = false): string {
+    if ([
+      QueryFilterSign.SUBSTRINGOF,
+      QueryFilterSign.STARTSWITH,
+      QueryFilterSign.ENDSWITH,
+    ].findIndex((item: string) => this._sOption === item) >= 0) {
+      return `${this._sOption}(${this._sField}, '${this._sValue}') eq true`
+    }
+
     const aResult = [this._sField, this._sOption, this._sValue]
     if (bWithConcat) {
       aResult.unshift(this._sConcat)
