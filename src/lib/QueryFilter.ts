@@ -70,15 +70,17 @@ export class QueryFilter {
   }
 
   private _toString(bWithConcat = false): string {
+    const aResult = [this._sField, this._sOption, this._sValue]
     if ([
       QueryFilterSign.SUBSTRINGOF,
       QueryFilterSign.STARTSWITH,
       QueryFilterSign.ENDSWITH,
     ].findIndex((item: string) => this._sOption === item) >= 0) {
-      return `${this._sOption}(${this._sField}, '${this._sValue}') eq true`
+      aResult[0] = `${this._sOption}(${this._sField}, '${this._sValue}')`
+      aResult[1] = `eq`
+      aResult[2] = `true`
     }
 
-    const aResult = [this._sField, this._sOption, this._sValue]
     if (bWithConcat) {
       aResult.unshift(this._sConcat)
     }

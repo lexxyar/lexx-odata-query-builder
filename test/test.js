@@ -109,7 +109,36 @@ describe('oData query builder', function () {
       o.filter(oFilter)
       strictEqual(o.build(), `${sUrl}?$filter=endswith(name, 'ohn') eq true`)
     });
+
+    describe('Complex filter', function () {
+      it('AND condition: gender eq `f` and age gt 16', function () {
+        const o = new QueryBuilder(sUrl)
+        const oFilter = new QueryFilter('gender', 'f')
+        const oFilterAge = new QueryFilter('age', 16, QueryFilterSign.GT)
+        oFilter.and(oFilterAge)
+        o.filter(oFilter)
+        strictEqual(o.build(), `${sUrl}?$filter=gender eq f and age gt 16`)
+      });
+      it('OR condition: gender eq `f` or age gt 16', function () {
+        const o = new QueryBuilder(sUrl)
+        const oFilter = new QueryFilter('gender', 'f')
+        const oFilterAge = new QueryFilter('age', 16, QueryFilterSign.GT)
+        oFilter.or(oFilterAge)
+        o.filter(oFilter)
+        strictEqual(o.build(), `${sUrl}?$filter=gender eq f or age gt 16`)
+      });
+      it('OR & String function condition: name1 or name2 starts with `ohn`', function () {
+        const o = new QueryBuilder(sUrl)
+        const oFilter = new QueryFilter('name1', 'ohn', QueryFilterSign.STARTSWITH)
+        const oFilterName2 = new QueryFilter('name2', 'ohn', QueryFilterSign.STARTSWITH)
+        oFilter.or(oFilterName2)
+        o.filter(oFilter)
+        strictEqual(o.build(), `${sUrl}?$filter=startswith(name1, 'ohn') eq true or startswith(name2, 'ohn') eq true`)
+      });
+    });
   });
+
+
 
   describe('Counting', function () {
     it('Simple count', function () {
