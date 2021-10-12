@@ -14,8 +14,9 @@
   * [Paging](#paging)
   * [Filtering](#filtering)
   * [ID](#id)
-  * [force](#force)
-  * [select](#select)
+  * [Force](#force)
+  * [Select](#select)
+  * [File content](#file-content)
 
 
 # Installation
@@ -141,7 +142,7 @@ o.id(4).build()
 > Output `/users(4)`
 
 ### force
-`$force` is extra **boolean** type parameter. It wil not make effect to real oData server, but you can use it in 
+`$force` is extra **boolean** type parameter. It will not make effect to real oData server, but you can use it in 
 development. 
 ```js
 const o = new QueryBuilder('/users')
@@ -157,3 +158,26 @@ o.select(['id','name']).build()
 ```
 
 > Output `/users?$select=id,name`
+
+### File content
+Getting the file content is extra path. It will not make effect to real oData server, but you can use it in 
+development as ideology.
+
+#### File content as-is
+To get file content, call `asFileContent` method
+```js
+const o = new QueryBuilder('/files')
+o.id(4).asFileContent().build()
+```
+
+> Output `/files(4)/_file`
+
+#### Base64 encoded content
+Sometimes needed to get base64 encoded content. Use `asFileContentBase64` method to generate path
+
+```js
+const o = new QueryBuilder('/files')
+o.id(4).asFileContentBase64().build()
+```
+
+> Output `/files(4)/_file64`

@@ -16,6 +16,8 @@ export class QueryBuilder {
   private _nId = 0
   private _bForce = false
   private _aSelect: string[] = []
+  private _bFileContent = false
+  private _bFileContentBase64 = false
 
   constructor(private _sUrl: string, private _oConfig?: QueryBuilderConfig) {
   }
@@ -124,6 +126,18 @@ export class QueryBuilder {
     return this
   }
 
+  asFileContent(): this {
+    this._bFileContentBase64 = false
+    this._bFileContent = true
+    return this
+  }
+
+  asFileContentBase64(): this {
+    this._bFileContentBase64 = true
+    this._bFileContent = false
+    return this
+  }
+
   build(): string {
     const aQuery: string[] = []
     if (!this._nId) {
@@ -163,6 +177,11 @@ export class QueryBuilder {
     const sUrl = [this._sUrl]
     if (this._nId) {
       sUrl.push(`(${this._nId})`)
+      if (this._bFileContent) {
+        sUrl.push(`/_file`)
+      } else if (this._bFileContentBase64) {
+        sUrl.push(`/_file64`)
+      }
     } else {
       sUrl.push(this._bCount ? '/$count' : '')
     }

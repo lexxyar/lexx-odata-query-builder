@@ -153,6 +153,19 @@ describe('oData query builder', function () {
     });
   });
 
+  describe('File content', function () {
+    it('Content', function () {
+      const o = new QueryBuilder(sUrl)
+      o.id(4).asFileContent()
+      strictEqual(o.build(), `${sUrl}(4)/_file`)
+    });
+    it('Base64 content', function () {
+      const o = new QueryBuilder(sUrl)
+      o.id(4).asFileContentBase64()
+      strictEqual(o.build(), `${sUrl}(4)/_file64`)
+    });
+  })
+
   describe('Misc', function () {
     it('By ID', function () {
       const o = new QueryBuilder(sUrl)
