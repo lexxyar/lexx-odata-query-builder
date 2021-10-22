@@ -77,19 +77,19 @@ describe('oData query builder', function () {
     it('gender eq `f`', function () {
       const o = new QueryBuilder(sUrl)
       o.filter(new QueryFilter('gender', 'f'))
-      strictEqual(o.build(), `${sUrl}?$filter=gender eq f`)
+      strictEqual(o.build(), `${sUrl}?$filter=gender eq 'f'`)
     });
     it('age gt 16', function () {
       const o = new QueryBuilder(sUrl)
       o.filter(new QueryFilter('age', 16, QueryFilterSign.GT))
-      strictEqual(o.build(), `${sUrl}?$filter=age gt 16`)
+      strictEqual(o.build(), `${sUrl}?$filter=age gt '16'`)
     });
     it('gender eq `f` and age gt 16', function () {
       const o = new QueryBuilder(sUrl)
       const oFilter = new QueryFilter('gender', 'f')
       oFilter.and('age', 16, QueryFilterSign.GT)
       o.filter(oFilter)
-      strictEqual(o.build(), `${sUrl}?$filter=gender eq f and age gt 16`)
+      strictEqual(o.build(), `${sUrl}?$filter=gender eq 'f' and age gt '16'`)
     });
     it("substringof(name, 'ohn') eq true", function () {
       const o = new QueryBuilder(sUrl)
@@ -111,13 +111,13 @@ describe('oData query builder', function () {
     });
 
     describe('Complex filter', function () {
-      it('AND condition: gender eq `f` and age gt 16', function () {
+      it('AND condition: gender eq `f` and age gt `16`', function () {
         const o = new QueryBuilder(sUrl)
         const oFilter = new QueryFilter('gender', 'f')
         const oFilterAge = new QueryFilter('age', 16, QueryFilterSign.GT)
         oFilter.and(oFilterAge)
         o.filter(oFilter)
-        strictEqual(o.build(), `${sUrl}?$filter=gender eq f and age gt 16`)
+        strictEqual(o.build(), `${sUrl}?$filter=gender eq 'f' and age gt '16'`)
       });
       it('OR condition: gender eq `f` or age gt 16', function () {
         const o = new QueryBuilder(sUrl)
@@ -125,7 +125,7 @@ describe('oData query builder', function () {
         const oFilterAge = new QueryFilter('age', 16, QueryFilterSign.GT)
         oFilter.or(oFilterAge)
         o.filter(oFilter)
-        strictEqual(o.build(), `${sUrl}?$filter=gender eq f or age gt 16`)
+        strictEqual(o.build(), `${sUrl}?$filter=gender eq 'f' or age gt '16'`)
       });
       it('OR & String function condition: name1 or name2 starts with `ohn`', function () {
         const o = new QueryBuilder(sUrl)
@@ -146,10 +146,10 @@ describe('oData query builder', function () {
       o.count()
       strictEqual(o.build(), `${sUrl}/$count`)
     });
-    it('Count with filter, where age gt 16', function () {
+    it('Count with filter, where age gt `16`', function () {
       const o = new QueryBuilder(sUrl)
       o.filter(new QueryFilter('age', 16, QueryFilterSign.GT)).count()
-      strictEqual(o.build(), `${sUrl}/$count?$filter=age gt 16`)
+      strictEqual(o.build(), `${sUrl}/$count?$filter=age gt '16'`)
     });
   });
 

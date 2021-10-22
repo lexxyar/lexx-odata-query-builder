@@ -25,7 +25,7 @@ export class QueryFilter {
   constructor(mField: string | QueryFilter, sValue: any = '', sOption = QueryFilterSign.EQ) {
     if (typeof mField === 'string') {
       this._sField = mField
-      this._sValue = sValue
+      this._sValue = `'${sValue}'`
       this._sOption = sOption
     } else {
       this._aChildFilter.push(mField)
@@ -76,7 +76,7 @@ export class QueryFilter {
       QueryFilterSign.STARTSWITH,
       QueryFilterSign.ENDSWITH,
     ].findIndex((item: string) => this._sOption === item) >= 0) {
-      aResult[0] = `${this._sOption}(${this._sField}, '${this._sValue}')`
+      aResult[0] = `${this._sOption}(${this._sField}, ${this._sValue})`
       aResult[1] = `eq`
       aResult[2] = `true`
     }
