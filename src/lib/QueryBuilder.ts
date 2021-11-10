@@ -18,6 +18,7 @@ export class QueryBuilder {
   private _aSelect: string[] = []
   private _bFileContent = false
   private _bFileContentBase64 = false
+  private _aAttach: string[] = []
 
   constructor(private _sUrl: string, private _oConfig?: QueryBuilderConfig) {
   }
@@ -50,6 +51,15 @@ export class QueryBuilder {
       this._aSelect = this._aSelect.concat(mField)
     } else if (typeof (mField) === 'string') {
       this._aSelect.push(mField)
+    }
+    return this
+  }
+
+  attach(mField: string | string[]): this {
+    if (Array.isArray(mField)) {
+      this._aAttach = this._aAttach.concat(mField)
+    } else if (typeof (mField) === 'string') {
+      this._aAttach.push(mField)
     }
     return this
   }
@@ -171,7 +181,11 @@ export class QueryBuilder {
     }
 
     if (this._bForce) {
-      aQuery.push('$force=true')
+      aQuery.push('_force=true')
+    }
+
+    if (this._aAttach.length > 0) {
+      aQuery.push('_attach=' + this._aAttach.join(','))
     }
 
     const sUrl = [this._sUrl]

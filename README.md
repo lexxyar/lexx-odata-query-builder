@@ -14,7 +14,8 @@
   * [Paging](#paging)
   * [Filtering](#filtering)
   * [ID](#id)
-  * [Force](#force)
+  * [_force](#_force-parameter)
+  * [_attach](#_attach-parameter)
   * [Select](#select)
   * [File content](#file-content)
 
@@ -141,14 +142,25 @@ o.id(4).build()
 ```
 > Output `/users(4)`
 
-### force
-`$force` is extra **boolean** type parameter. It will not make effect to real oData server, but you can use it in 
-development. 
+### _force parameter
+`_force` is extra **boolean** type parameter. It will not make effect to real oData server, but you can use it in 
+development. In Laravel
 ```js
 const o = new QueryBuilder('/users')
 o.force().build()
 ```
-> Output `/users?$force=true`
+> Output `/users?_force=true`
+
+>Note! Since version 1.4.0 parameter `$force` named `_force` to separate with OData convinient
+
+### _attach parameter
+`_attach` is extra **string** type parameter. It will not make effect to real oData server, but you can use it in 
+development. 
+```js
+const o = new QueryBuilder('/users')
+o.attach(['field1', 'field2']).build()
+```
+> Output `/users?_attach=field1,field2`
 
 ### Select
 Use `select` method to constrain returned fields

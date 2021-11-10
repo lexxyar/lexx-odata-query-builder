@@ -172,10 +172,15 @@ describe('oData query builder', function () {
       o.id(4)
       strictEqual(o.build(), `${sUrl}(4)`)
     });
-    it('$force (Laravel extra)', function () {
+    it('_force (Laravel extra)', function () {
       const o = new QueryBuilder(sUrl)
       o.force()
-      strictEqual(o.build(), `${sUrl}?$force=true`)
+      strictEqual(o.build(), `${sUrl}?_force=true`)
+    });
+    it('_attach (Laravel extra)', function () {
+      const o = new QueryBuilder(sUrl)
+      o.attach('fieldname')
+      strictEqual(o.build(), `${sUrl}?_attach=fieldname`)
     });
     it('$select', function () {
       const o = new QueryBuilder(sUrl)
