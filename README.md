@@ -33,6 +33,14 @@ o.build()
 ```
 > Output `http://site.com/api/users`
 
+Or with custom query params
+```js
+const o = new QueryBuilder('http://site.com/odata/users')
+o.querySet('lang', 'en')
+o.build()
+```
+> Output `http://site.com/api/users?lang=en`
+
 ### Ordering
 Use `order` method to add order query parameters
 > Note: `order` method has an alias `orderby`

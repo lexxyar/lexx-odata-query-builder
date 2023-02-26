@@ -19,6 +19,7 @@ export class QueryBuilder {
   private _bFileContent = false
   private _bFileContentBase64 = false
   private _aAttach: string[] = []
+  private _aRequestQuery: Map<string, string> = new Map<string, string>()
 
   constructor(private _sUrl: string, private _oConfig?: QueryBuilderConfig) {
   }
@@ -32,8 +33,16 @@ export class QueryBuilder {
     return this
   }
 
+  /**
+   * @deprecated since 1.5.0 and will be removed in version 1.6.0
+   */
   force(): this {
     this._bForce = true
+    return this
+  }
+
+  querySet(sKey: string, sValue: string): this {
+    this._aRequestQuery.set(sKey, encodeURI(sValue))
     return this
   }
 
@@ -55,6 +64,11 @@ export class QueryBuilder {
     return this
   }
 
+  /**
+   *
+   * @param mField
+   * @deprecated since 1.5.0 and will be removed in version 1.6.0
+   */
   attach(mField: string | string[]): this {
     if (Array.isArray(mField)) {
       this._aAttach = this._aAttach.concat(mField)
@@ -180,12 +194,20 @@ export class QueryBuilder {
       aQuery.push('$select=' + this._aSelect.join(','))
     }
 
+    // Deprecated sins 1.5.0 and will be removed
     if (this._bForce) {
       aQuery.push('_force=true')
     }
 
+    // Deprecated sins 1.5.0 and will be removed
     if (this._aAttach.length > 0) {
       aQuery.push('_attach=' + this._aAttach.join(','))
+    }
+
+    if (this._aRequestQuery.size > 0) {
+      this._aRequestQuery.forEach((sValue: string, sKey: string) => {
+        aQuery.push(`${sKey}=${sValue}`)
+      })
     }
 
     const sUrl = [this._sUrl]

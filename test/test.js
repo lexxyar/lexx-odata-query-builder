@@ -10,6 +10,11 @@ describe('oData query builder', function () {
     const o = new QueryBuilder(sUrl)
     strictEqual(o.build(), sUrl)
   });
+  it(`Simple URL '${sUrl}' with query 'lang=en&search=sun'`, function () {
+    const o = new QueryBuilder(sUrl)
+    o.querySet('lang','en').querySet('search','sun')
+    strictEqual(o.build(), sUrl+'?lang=en&search=sun')
+  });
 
   describe('Ordering', function () {
     it('Order `name1 asc`', function () {
