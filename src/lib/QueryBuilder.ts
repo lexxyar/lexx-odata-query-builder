@@ -31,6 +31,12 @@ export class QueryBuilder {
         if (urlParts.length > 1) {
             const query = Object.fromEntries(new URLSearchParams(urlParts[1]));
 
+            Object.keys(query).map((param:string)=>{
+                if(!param.startsWith('$')){
+                    qb.querySet(param, query[param])
+                }
+            })
+
             if (Object.keys(query).includes('$top')) {
                 qb._parseLimit(query['$top'])
             }
