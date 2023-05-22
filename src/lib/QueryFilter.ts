@@ -18,19 +18,19 @@ export enum QueryFilterConcatenate {
 export class QueryFilter {
     private _sField = ''
     private _sValue = ''
-    private _sOption = QueryFilterSign.EQ
-    private _sConcat = QueryFilterConcatenate.AND
+    private _sOption: QueryFilterSign = QueryFilterSign.EQ
+    private _sConcat: QueryFilterConcatenate = QueryFilterConcatenate.AND
     private _aChildFilter: QueryFilter[] = []
 
     get field(): string {
         return this._sField
     }
 
-    constructor(mField: string | QueryFilter, sValue: any = '', sOption = QueryFilterSign.EQ) {
+    constructor(mField: string | QueryFilter, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ) {
         if (typeof mField === 'string') {
             this._sField = mField
             this._sValue = `'${sValue}'`
-            this._sOption = sOption
+            this._sOption = sOption.toLowerCase() as QueryFilterSign
         } else {
             this._aChildFilter.push(mField)
         }

@@ -1,5 +1,5 @@
 import {QueryFilter} from "./QueryFilter";
-import {QueryOrder} from "./QueryOrder";
+import {QueryOrder, QueryOrderDirection} from "./QueryOrder";
 
 export interface QueryBuilderConfig {
     rowsPerPage?: number
@@ -24,11 +24,43 @@ export class QueryBuilder {
     constructor(private _sUrl: string, private _oConfig?: QueryBuilderConfig) {
     }
 
-    // static parse(sUrl: string): QueryBuilder {
-    //     //`http://crm/odata/employe?$top=7&$skip=4`
-    //     console.log(new URL(sUrl))
-    //     return new QueryBuilder(sUrl)
-    // }
+    static parse(sUrl: string): QueryBuilder {
+        const urlParts = sUrl.split(/\?(.*)/s)
+        urlParts.pop()
+        const qb = new QueryBuilder(urlParts[0])
+        if (urlParts.length > 1) {
+            const query = Object.fromEntries(new URLSearchParams(urlParts[1]));
+
+            if (Object.keys(query).includes('$top')) {
+                qb._parseLimit(query['$top'])
+            }
+            if (Object.keys(query).includes('$limit')) {
+                qb._parseLimit(query['$limit'])
+            }
+            if (Object.keys(query).includes('$offset')) {
+                qb._parseOffset(query['$offset'])
+            }
+            if (Object.keys(query).includes('$skip')) {
+                qb._parseOffset(query['$skip'])
+            }
+            if (Object.keys(query).includes('$orderby')) {
+                qb._parseOrderBy(query['$orderby'])
+            }
+            if (Object.keys(query).includes('$order')) {
+                qb._parseOrderBy(query['$order'])
+            }
+            if (Object.keys(query).includes('$expand')) {
+                qb._parseExpand(query['$expand'])
+            }
+            if (Object.keys(query).includes('$select')) {
+                qb._parseSelect(query['$select'])
+            }
+            if (Object.keys(query).includes('$filter')) {
+                qb._parseFilter(query['$filter'])
+            }
+        }
+        return qb
+    }
 
     get url(): string {
         return this._sUrl
@@ -190,9 +222,9 @@ export class QueryBuilder {
             // if (this._oFilter !== null) {
             //     aQuery.push('$filter=' + this._oFilter.build())
             // }
-            if (this._aFilter.length >0) {
+            if (this._aFilter.length > 0) {
                 const filter = new QueryFilter('')
-                this._aFilter.map((f:QueryFilter)=>{
+                this._aFilter.map((f: QueryFilter) => {
                     filter.addChild(f)
                 })
                 aQuery.push('$filter=' + filter.build())
@@ -242,5 +274,140 @@ export class QueryBuilder {
         this._bUseLimit = false
         this._bCount = false
         return sUrl.join('')
+    }
+
+    private _parseLimit(value: string) {
+        this.limit(+value)
+    }
+
+    private _parseOffset(value: string) {
+        this.offset(+value)
+    }
+
+    private _parseOrderBy(value: string) {
+        if (value === '') {
+            return
+        }
+        value.split(',').map((fieldValue: string) => {
+            const orderParts = fieldValue.trim().split(' ')
+            let dir = QueryOrderDirection.ASC
+            const field = orderParts[0].trim()
+
+            if (orderParts.length === 2) {
+                if (orderParts[1].trim().toLowerCase() === 'desc') {
+                    dir = QueryOrderDirection.DESC
+                }
+            }
+            this.order(new QueryOrder(field, dir))
+        })
+    }
+
+    private _parseExpand(value: string) {
+        if (value === '') {
+            return
+        }
+        value.split(',').map((field: string) => {
+            this.expand(field.trim())
+        })
+    }
+
+    private _parseSelect(value: string) {
+        if (value === '') {
+            return
+        }
+        value.split(',').map((field: string) => {
+            this.select(field.trim())
+        })
+    }
+
+    private _parseFilter(value: string) {
+        if (value === '') {
+            return
+        }
+        const words = value.split(' ')
+
+        let quote = 0;
+        let text = '';
+        let stage = 0;
+        let matches = [];
+        let group = 0;
+        let o = {condition: 'and', field: '', group: 0, operator: 'eq', value: ''}
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i]
+            text = [text, word].join(' ').trim()
+            let regex = /'/gi;
+            let quoteCount = (word.match(regex) || []).length;
+            quote += quoteCount;
+            if (quote % 2 != 0) continue;
+
+            if (i === 0) {
+                stage++
+                o = {condition: 'and', field: '', group: 0, operator: 'eq', value: ''}
+                matches.push(o);
+            }
+
+            switch (stage) {
+                case 0: // Binary operation
+                    o = {condition: 'and', field: '', group: 0, operator: 'eq', value: ''}
+                    matches.push(o);
+                    o.condition = text;
+                    stage++;
+                    break;
+                case 1: // Field
+                    if (text.startsWith('(')) {
+                        group++;
+                        text = text.substring(1);
+                    }
+                    o.field = text;
+                    o.group = group;
+                    stage++;
+                    break;
+                case 2: // Sign
+                    if ('eq,ne,lt,le,gt,ge'.split(',').includes(text.toLowerCase())) {
+                        o.operator = text;
+                        stage++;
+                    } else {
+                        o.field += text;
+                    }
+                    break;
+                case 3: // Value
+                    if (text.endsWith(')')) {
+                        group--;
+                        text = text.substring(0, text.length - 1);
+                    }
+                    o.value = text;
+                    stage = 0;
+                    break;
+            }
+
+            text = '';
+        }
+
+        matches.map((match: any) => {
+
+            if (match.field.toLowerCase().startsWith('substringof') ||
+                match.field.toLowerCase().startsWith('contains') ||
+                match.field.toLowerCase().startsWith('endswith') ||
+                match.field.toLowerCase().startsWith('startswith')) {
+
+                const re = /(?<Operator>.+)\(((?<Field>.+),s*'(?<Value>.+)')/gm
+                const groups = re.exec(match.field)?.groups
+                if (groups) {
+                    let val = groups.Value
+                    if (groups.Value.startsWith("'")) {
+                        val = groups.Value.substring(1, groups.Value.length - 1)
+                    }
+                    const f = new QueryFilter(groups.Field, val, groups.Operator)
+                    this.filter(f);
+                }
+            } else {
+                let val = match.value
+                if (match.value.startsWith("'")) {
+                    val = match.value.substring(1, match.value.length - 1)
+                }
+                const f = new QueryFilter(match.field, val, match.operator)
+                this.filter(f);
+            }
+        })
     }
 }
