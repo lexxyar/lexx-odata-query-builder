@@ -192,5 +192,10 @@ describe('oData query builder', function () {
       o.select(['id','name'])
       strictEqual(o.build(), `${sUrl}?$select=id,name`)
     });
+    // it('Parse input url', function () {
+    //   const o = QueryBuilder.parse(`${sUrl}?$top=7&$skip=4`)
+    //   o.limit(7).shift(4)
+    //   strictEqual(o.build(), `${sUrl}?$top=7&$skip=4`)
+    // });
   });
 });
