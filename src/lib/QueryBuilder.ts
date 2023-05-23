@@ -14,11 +14,9 @@ export class QueryBuilder {
     private _aOrder: QueryOrder[] = []
     private _bCount = false
     private _nId = 0
-    private _bForce = false
     private _aSelect: string[] = []
     private _bFileContent = false
     private _bFileContentBase64 = false
-    private _aAttach: string[] = []
     private _aRequestQuery: Map<string, string> = new Map<string, string>()
 
     constructor(private _sUrl: string, private _oConfig?: QueryBuilderConfig) {
@@ -31,8 +29,8 @@ export class QueryBuilder {
         if (urlParts.length > 1) {
             const query = Object.fromEntries(new URLSearchParams(urlParts[1]));
 
-            Object.keys(query).map((param:string)=>{
-                if(!param.startsWith('$')){
+            Object.keys(query).map((param: string) => {
+                if (!param.startsWith('$')) {
                     qb.querySet(param, query[param])
                 }
             })
@@ -77,17 +75,14 @@ export class QueryBuilder {
         return this
     }
 
-    /**
-     * @deprecated since 1.5.0 and will be removed in version 1.6.0
-     */
-    force(): this {
-        this._bForce = true
-        return this
-    }
-
     querySet(sKey: string, sValue: string): this {
         this._aRequestQuery.set(sKey, encodeURI(sValue))
         return this
+    }
+
+    queryGet(sKey: string): string | null {
+        // @ts-ignore
+        return this._aRequestQuery.has(sKey) ? this._aRequestQuery.get(sKey).toString() : null
     }
 
     expand(mEntity: string | string[]): this {
@@ -104,20 +99,6 @@ export class QueryBuilder {
             this._aSelect = this._aSelect.concat(mField)
         } else {
             this._aSelect.push(mField)
-        }
-        return this
-    }
-
-    /**
-     *
-     * @param mField
-     * @deprecated since 1.5.0 and will be removed in version 1.6.0
-     */
-    attach(mField: string | string[]): this {
-        if (Array.isArray(mField)) {
-            this._aAttach = this._aAttach.concat(mField)
-        } else {
-            this._aAttach.push(mField)
         }
         return this
     }
@@ -243,16 +224,6 @@ export class QueryBuilder {
 
         if (this._aSelect.length > 0) {
             aQuery.push('$select=' + this._aSelect.join(','))
-        }
-
-        // Deprecated sins 1.5.0 and will be removed
-        if (this._bForce) {
-            aQuery.push('_force=true')
-        }
-
-        // Deprecated sins 1.5.0 and will be removed
-        if (this._aAttach.length > 0) {
-            aQuery.push('_attach=' + this._aAttach.join(','))
         }
 
         if (this._aRequestQuery.size > 0) {
