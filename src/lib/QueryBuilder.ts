@@ -80,6 +80,13 @@ export class QueryBuilder {
         return this
     }
 
+    queryDelete(sKey: string): this {
+        if (this._aRequestQuery.has(sKey)) {
+            this._aRequestQuery.delete(sKey)
+        }
+        return this
+    }
+
     queryGet(sKey: string): string | null {
         // @ts-ignore
         return this._aRequestQuery.has(sKey) ? this._aRequestQuery.get(sKey).toString() : null
