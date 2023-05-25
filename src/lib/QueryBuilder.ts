@@ -155,6 +155,14 @@ export class QueryBuilder {
         return this
     }
 
+    filterDelete(sFieldName: string): this {
+        const idx = this._aFilter.findIndex((e: QueryFilter) => e.field === sFieldName)
+        if (idx >= 0) {
+            this._aFilter.splice(idx, 1)
+        }
+        return this
+    }
+
     order(oOrder: QueryOrder): this {
         this._aOrder.push(oOrder)
         return this
