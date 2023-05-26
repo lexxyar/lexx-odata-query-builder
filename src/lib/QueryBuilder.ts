@@ -163,10 +163,14 @@ export class QueryBuilder {
         return this
     }
 
-    removeOrder(sField: string): this {
-        const index = this._aOrder.findIndex((e: QueryOrder) => e.sField === sField)
-        if (index >= 0) {
-            this._aOrder.splice(index, 1)
+    removeOrder(sField: string | null = null): this {
+        if (sField === null) {
+            this._aOrder = []
+        } else {
+            const index = this._aOrder.findIndex((e: QueryOrder) => e.sField === sField)
+            if (index >= 0) {
+                this._aOrder.splice(index, 1)
+            }
         }
         return this
     }

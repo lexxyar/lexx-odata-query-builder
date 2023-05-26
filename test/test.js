@@ -53,6 +53,14 @@ describe('oData query builder', function () {
           .removeOrder('name2')
       strictEqual(o.build(), `${sUrl}?$orderby=name1 asc,name3 asc`)
     });
+    it('Remove order', function () {
+      const o = new QueryBuilder(sUrl)
+      o.order('name1')
+          .order('name2', QueryOrderDirection.DESC)
+          .order('name3', 'Asc')
+          .removeOrder()
+      strictEqual(o.build(), `${sUrl}`)
+    });
   });
 
   describe('Expanding', function () {
