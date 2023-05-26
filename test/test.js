@@ -32,6 +32,27 @@ describe('oData query builder', function () {
       o.order(new QueryOrder('name1')).order(new QueryOrder('name2', QueryOrderDirection.DESC))
       strictEqual(o.build(), `${sUrl}?$orderby=name1 asc,name2 desc`)
     });
+    it('Adding several orderings for one field', function () {
+      const o = new QueryBuilder(sUrl)
+      o.order(new QueryOrder('name1'))
+          .order(new QueryOrder('name1', QueryOrderDirection.DESC))
+      strictEqual(o.build(), `${sUrl}?$orderby=name1 desc`)
+    });
+    it('Adding order via field and value', function () {
+      const o = new QueryBuilder(sUrl)
+      o.order('name1')
+          .order('name2', QueryOrderDirection.DESC)
+          .order('name3', 'Asc')
+      strictEqual(o.build(), `${sUrl}?$orderby=name1 asc,name2 desc,name3 asc`)
+    });
+    it('Remove order', function () {
+      const o = new QueryBuilder(sUrl)
+      o.order('name1')
+          .order('name2', QueryOrderDirection.DESC)
+          .order('name3', 'Asc')
+          .removeOrder('name2')
+      strictEqual(o.build(), `${sUrl}?$orderby=name1 asc,name3 asc`)
+    });
   });
 
   describe('Expanding', function () {

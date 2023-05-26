@@ -163,8 +163,33 @@ export class QueryBuilder {
         return this
     }
 
-    order(oOrder: QueryOrder): this {
-        this._aOrder.push(oOrder)
+    removeOrder(sField: string): this {
+        const index = this._aOrder.findIndex((e: QueryOrder) => e.sField === sField)
+        if (index >= 0) {
+            this._aOrder.splice(index, 1)
+        }
+        return this
+    }
+
+    order(mOrder: QueryOrder | string, mDirection: QueryOrderDirection | string = QueryOrderDirection.ASC): this {
+        let oOrder: QueryOrder
+        if (mOrder instanceof QueryOrder) {
+            oOrder = mOrder
+        } else {
+            let dir: QueryOrderDirection
+            if (typeof mDirection === 'string') {
+                dir = mDirection.toLowerCase() as QueryOrderDirection
+            } else {
+                dir = mDirection
+            }
+            oOrder = new QueryOrder(mOrder, dir)
+        }
+        const index = this._aOrder.findIndex((e: QueryOrder) => e.sField === oOrder.sField)
+        if (index >= 0) {
+            this._aOrder[index] = oOrder
+        } else {
+            this._aOrder.push(oOrder)
+        }
         return this
     }
 
