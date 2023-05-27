@@ -150,6 +150,11 @@ export class QueryBuilder {
         return this._aFilter
     }
 
+    filterExist(sField:string):boolean{
+        const index = this._aFilter.findIndex((filter:QueryFilter)=>filter.field.toLowerCase() === sField.toLowerCase())
+        return index >= 0
+    }
+
     filter(oFilter: QueryFilter): this {
         this._aFilter?.push(oFilter)
         return this
