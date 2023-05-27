@@ -150,9 +150,15 @@ export class QueryBuilder {
         return this._aFilter
     }
 
-    filterExist(sField:string):boolean{
-        const index = this._aFilter.findIndex((filter:QueryFilter)=>filter.field.toLowerCase() === sField.toLowerCase())
+    filterExist(sField: string): boolean {
+        const index = this._aFilter.findIndex((filter: QueryFilter) => filter.field.toLowerCase() === sField.toLowerCase())
         return index >= 0
+    }
+
+    getFilterByField(sField: string): QueryFilter | null {
+        const index = this._aFilter.findIndex((filter: QueryFilter) => filter.field.toLowerCase() === sField.toLowerCase())
+        if (index < 0) return null
+        return this._aFilter[index]
     }
 
     filter(oFilter: QueryFilter): this {
