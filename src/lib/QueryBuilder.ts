@@ -175,6 +175,10 @@ export class QueryBuilder {
         return this
     }
 
+    getOrder(): QueryOrder[] {
+        return this._aOrder
+    }
+
     order(mOrder: QueryOrder | string, mDirection: QueryOrderDirection | string = QueryOrderDirection.ASC): this {
         let oOrder: QueryOrder
         if (mOrder instanceof QueryOrder) {
