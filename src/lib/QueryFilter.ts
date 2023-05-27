@@ -26,6 +26,23 @@ export class QueryFilter {
         return this._sField
     }
 
+    get value(): string {
+        return this._sValue
+    }
+
+    get option(): string {
+        return this._sOption
+    }
+
+
+    get concat(): QueryFilterConcatenate {
+        return this._sConcat.toLowerCase() === 'and' ? QueryFilterConcatenate.AND : QueryFilterConcatenate.OR
+    }
+
+    set concat(sValue: QueryFilterConcatenate) {
+        this._sConcat = sValue
+    }
+
     constructor(mField: string | QueryFilter, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ) {
         if (typeof mField === 'string') {
             this._sField = mField
@@ -68,14 +85,6 @@ export class QueryFilter {
             this._add(mFilter, mFilter.concat)
         }
         return this
-    }
-
-    get concat(): QueryFilterConcatenate {
-        return this._sConcat.toLowerCase() === 'and' ? QueryFilterConcatenate.AND : QueryFilterConcatenate.OR
-    }
-
-    set concat(sValue: QueryFilterConcatenate) {
-        this._sConcat = sValue
     }
 
     build(bWithConcat = false): string {
