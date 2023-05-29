@@ -162,11 +162,27 @@ export class QueryBuilder {
     }
 
     filter(mField: QueryFilter | string, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ): this {
-        if (mField instanceof QueryFilter) {
-            this._aFilter?.push(mField)
+        const newFilter: QueryFilter = (mField instanceof QueryFilter)
+            ? mField
+            : new QueryFilter(mField, sValue, sOption)
+
+        this._aFilter?.push(newFilter)
+
+        return this
+    }
+
+    filterSet(mField: QueryFilter | string, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ): this {
+        const newFilter: QueryFilter = (mField instanceof QueryFilter)
+            ? mField
+            : new QueryFilter(mField, sValue, sOption)
+
+        if (this.filterExist(newFilter.field)) {
+            const index = this._aFilter.findIndex((filter: QueryFilter) => filter.field.toLowerCase() === newFilter.field.toLowerCase())
+            this._aFilter[index] = newFilter
         } else {
-            this._aFilter?.push(new QueryFilter(mField, sValue, sOption))
+            this._aFilter?.push(newFilter)
         }
+
         return this
     }
 

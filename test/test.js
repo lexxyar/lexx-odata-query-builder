@@ -143,6 +143,12 @@ describe('oData query builder', function () {
       o.filter(oFilter)
       strictEqual(o.build(), `${sUrl}?$filter=endswith(name, 'ohn') eq true`)
     });
+    it('Replacing filter value, using filterSet', function () {
+      const o = new QueryBuilder(sUrl)
+      o.filter(new QueryFilter('gender', 'f'))
+      o.filterSet('gender', 'm')
+      strictEqual(o.build(), `${sUrl}?$filter=gender eq 'm'`)
+    });
 
     describe('Complex filter', function () {
       it('AND condition: gender eq `f` and age gt `16`', function () {
