@@ -30,6 +30,10 @@ export class QueryFilter {
         return this._sValue
     }
 
+    set value(val: string) {
+        this._sValue = val
+    }
+
     get option(): string {
         return this._sOption
     }
