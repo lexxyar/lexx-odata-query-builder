@@ -416,6 +416,9 @@ export class QueryBuilder {
                         text = text.substring(0, text.length - 1);
                     }
                     o.value = text;
+                    if (o.value.startsWith("'") && o.value.endsWith("'")) {
+                        o.value = o.value.substring(1, o.value.length - 1)
+                    }
                     stage = 0;
                     break;
             }
