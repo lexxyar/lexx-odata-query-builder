@@ -1,4 +1,4 @@
-import {QueryFilter} from "./QueryFilter";
+import {QueryFilter, QueryFilterSign} from "./QueryFilter";
 import {QueryOrder, QueryOrderDirection} from "./QueryOrder";
 
 export interface QueryBuilderConfig {
@@ -161,8 +161,12 @@ export class QueryBuilder {
         return this._aFilter[index]
     }
 
-    filter(oFilter: QueryFilter): this {
-        this._aFilter?.push(oFilter)
+    filter(mField: QueryFilter | string, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ): this {
+        if (mField instanceof QueryFilter) {
+            this._aFilter?.push(mField)
+        } else {
+            this._aFilter?.push(new QueryFilter(mField, sValue, sOption))
+        }
         return this
     }
 
