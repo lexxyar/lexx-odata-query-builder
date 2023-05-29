@@ -217,9 +217,14 @@ describe('oData query builder', function () {
       strictEqual(o.build(), `${sUrl}?$top=7&$skip=4&$filter=name1 eq 'qq?' and startswith(name2, 'ee') eq true`)
     });
     it('Parse input OData url with custom params', function () {
-      const o = QueryBuilder.parse(`${sUrl}?$top=7&$skip=4&page=1&$filter=name1 eq 'qq'`)
+      const o = QueryBuilder.parse(encodeURI(`${sUrl}?$top=7&$skip=4&page=1&$filter=name1 eq 'qq'`))
       o.limit(7).shift(4)
       strictEqual(o.build(), `${sUrl}?$top=7&$skip=4&$filter=name1 eq 'qq'&page=1`)
+    });
+    it('Parse input OData url and get filter value', function () {
+      const o = QueryBuilder.parse(encodeURI(`${sUrl}?$top=7&$skip=4&page=1&$filter=name1 eq 'qq'`))
+      o.limit(7).shift(4)
+      strictEqual(o.getFilterByField('name1').value, `qq`)
     });
   });
 });

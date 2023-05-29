@@ -27,11 +27,11 @@ export class QueryFilter {
     }
 
     get value(): string {
-        return this._sValue
+        return this._sValue.substring(1, this._sValue.length - 1)
     }
 
     set value(val: string) {
-        this._sValue = val
+        this._sValue = `'${val}'`
     }
 
     get option(): string {

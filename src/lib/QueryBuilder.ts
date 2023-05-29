@@ -412,13 +412,10 @@ export class QueryBuilder {
                     break;
                 case 3: // Value
                     if (text.endsWith(')')) {
-                        group--;
-                        text = text.substring(0, text.length - 1);
+                        group--
+                        text = text.substring(0, text.length - 1)
                     }
-                    o.value = text;
-                    if (o.value.startsWith("'") && o.value.endsWith("'")) {
-                        o.value = o.value.substring(1, o.value.length - 1)
-                    }
+                    o.value = text
                     stage = 0;
                     break;
             }
