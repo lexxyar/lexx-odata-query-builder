@@ -44,7 +44,7 @@ export class QueryFilter {
     }
 
     set concat(sValue: QueryFilterConcatenate) {
-        this._sConcat = sValue
+        this._sConcat = sValue as QueryFilterConcatenate
     }
 
     constructor(mField: string | QueryFilter, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ) {

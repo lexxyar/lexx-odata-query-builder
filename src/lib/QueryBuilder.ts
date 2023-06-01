@@ -1,4 +1,4 @@
-import {QueryFilter, QueryFilterSign} from "./QueryFilter";
+import {QueryFilter, QueryFilterConcatenate, QueryFilterSign} from "./QueryFilter";
 import {QueryOrder, QueryOrderDirection} from "./QueryOrder";
 
 export interface QueryBuilderConfig {
@@ -161,14 +161,19 @@ export class QueryBuilder {
         return this._aFilter[index]
     }
 
-    filter(mField: QueryFilter | string, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ): this {
+    filter(mField: QueryFilter | string, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ, sConcat: QueryFilterConcatenate | string = QueryFilterConcatenate.AND): this {
         const newFilter: QueryFilter = (mField instanceof QueryFilter)
             ? mField
             : new QueryFilter(mField, sValue, sOption)
 
+        newFilter.concat = sConcat as QueryFilterConcatenate
         this._aFilter?.push(newFilter)
 
         return this
+    }
+
+    filterOr(mField: QueryFilter | string, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ): this {
+        return this.filter(mField, sValue, sOption, QueryFilterConcatenate.OR)
     }
 
     filterSet(mField: QueryFilter | string, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ): this {
