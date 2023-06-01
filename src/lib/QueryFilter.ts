@@ -47,11 +47,14 @@ export class QueryFilter {
         this._sConcat = sValue as QueryFilterConcatenate
     }
 
-    constructor(mField: string | QueryFilter, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ) {
+    constructor(mField: string | QueryFilter, sValue: any = '', sOption: QueryFilterSign | string = QueryFilterSign.EQ, sConcat: QueryFilterConcatenate | string | null = null) {
         if (typeof mField === 'string') {
             this._sField = mField
             this._sValue = `'${sValue}'`
             this._sOption = sOption.toLowerCase() as QueryFilterSign
+            if (sConcat !== null) {
+                this._sConcat = sConcat as QueryFilterConcatenate
+            }
         } else {
             this._aChildFilter.push(mField)
         }
