@@ -7,17 +7,18 @@ export interface QueryBuilderConfig {
 
 export class QueryBuilder {
     private _aExpand: string[] = []
-    private _nLimit = 10
-    private _nOffset = 0
-    private _bUseLimit = false
+    private _nLimit: number = 10
+    private _nOffset: number = 0
+    private _bUseLimit: boolean = false
     private _aFilter: Array<QueryFilter> = []
     private _aOrder: QueryOrder[] = []
-    private _bCount = false
-    private _nId = 0
+    private _bCount: boolean = false
+    private _nId: string | number = 0
     private _aSelect: string[] = []
     private _bFileContent = false
     private _bFileContentBase64 = false
     private _aRequestQuery: Map<string, string> = new Map<string, string>()
+    private _inlineCount: boolean = false
 
     constructor(private _sUrl: string, private _oConfig?: QueryBuilderConfig) {
     }
@@ -62,6 +63,9 @@ export class QueryBuilder {
             if (Object.keys(query).includes('$filter')) {
                 qb._parseFilter(query['$filter'])
             }
+            if (Object.keys(query).includes('$count')) {
+                qb._parseCount(query['$count'])
+            }
         }
         return qb
     }
@@ -71,7 +75,7 @@ export class QueryBuilder {
     }
 
     id(mId: string | number): this {
-        this._nId = Number(mId)
+        this._nId = mId
         return this
     }
 
@@ -259,6 +263,11 @@ export class QueryBuilder {
         return this
     }
 
+    inlineCount(value: boolean = true): this {
+        this._inlineCount = value
+        return this
+    }
+
     asFileContent(): this {
         this._bFileContentBase64 = false
         this._bFileContent = true
@@ -281,7 +290,9 @@ export class QueryBuilder {
                 if (this._nOffset > 0) {
                     aQuery.push(`$skip=${this._nOffset}`)
                 }
-
+                if (this._inlineCount) {
+                    aQuery.push(`$count=true`)
+                }
                 if (this._aOrder.length > 0) {
                     const aOrder: string[] = []
                     this._aOrder.map((oOrder) => {
@@ -470,5 +481,12 @@ export class QueryBuilder {
                 this.filter(f);
             }
         })
+    }
+
+    private _parseCount(value: string) {
+        if (value === '') {
+            return
+        }
+        this._inlineCount = value.toLowerCase() === 'true'
     }
 }

@@ -175,6 +175,14 @@ describe('oData query builder', function () {
         o.filter(oFilter)
         strictEqual(o.build(), `${sUrl}?$filter=startswith(name1, 'ohn') eq true or startswith(name2, 'ohn') eq true`)
       });
+      it('filterOr function', function () {
+        const o = new QueryBuilder(sUrl)
+        const oFilter = new QueryFilter('name1', 'ohn', QueryFilterSign.STARTSWITH)
+        const oFilterName2 = new QueryFilter('name2', 'ohn', QueryFilterSign.STARTSWITH)
+        // oFilter.or(oFilterName2)
+        o.filter(oFilter).filterOr(oFilterName2)
+        strictEqual(o.build(), `${sUrl}?$filter=startswith(name1, 'ohn') eq true or startswith(name2, 'ohn') eq true`)
+      });
     });
   });
 
@@ -190,6 +198,11 @@ describe('oData query builder', function () {
       const o = new QueryBuilder(sUrl)
       o.filter(new QueryFilter('age', 16, QueryFilterSign.GT)).count()
       strictEqual(o.build(), `${sUrl}/$count?$filter=age gt '16'`)
+    });
+    it('Inline count', function () {
+      const o = new QueryBuilder(sUrl)
+      o.inlineCount()
+      strictEqual(o.build(), `${sUrl}?$count=true`)
     });
   });
 
