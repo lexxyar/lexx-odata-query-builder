@@ -1,12 +1,13 @@
 import {QueryFilter, QueryFilterConcatenate, QueryFilterSign} from "./QueryFilter";
 import {QueryOrder, QueryOrderDirection} from "./QueryOrder";
+import {QueryExpand} from "./QueryExpand";
 
 export interface QueryBuilderConfig {
     rowsPerPage?: number
 }
 
 export class QueryBuilder {
-    private _aExpand: string[] = []
+    private _aExpand: QueryExpand[] = []
     private _nLimit: number = 10
     private _nOffset: number = 0
     private _bUseLimit: boolean = false
@@ -96,11 +97,28 @@ export class QueryBuilder {
         return this._aRequestQuery.has(sKey) ? this._aRequestQuery.get(sKey).toString() : null
     }
 
-    expand(mEntity: string | string[]): this {
+    expand(mEntity: string | string[] | QueryExpand | QueryExpand[], count: boolean = false): this {
         if (Array.isArray(mEntity)) {
-            this._aExpand = this._aExpand.concat(mEntity)
+            mEntity.map((entityName: string | QueryExpand) => {
+                if (typeof entityName === 'string') {
+                    const exp = new QueryExpand()
+                    exp.entity = entityName
+                    exp.withCount(count)
+                    this._aExpand.push(exp)
+                } else {
+                    this._aExpand.push(entityName)
+                }
+            })
+            // this._aExpand = this._aExpand.concat(mEntity)
         } else {
-            this._aExpand.push(mEntity)
+            if (typeof mEntity === 'string') {
+                const exp = new QueryExpand()
+                exp.entity = mEntity
+                exp.withCount(count)
+                this._aExpand.push(exp)
+            } else {
+                this._aExpand.push(mEntity)
+            }
         }
         return this
     }
@@ -314,7 +332,11 @@ export class QueryBuilder {
         }
 
         if (this._aExpand.length > 0) {
-            aQuery.push('$expand=' + this._aExpand.join(','))
+            const expands: string[] = []
+            this._aExpand.map((exp: QueryExpand) => {
+                expands.push(exp.toString())
+            })
+            aQuery.push('$expand=' + expands.join(','))
         }
 
         if (this._aSelect.length > 0) {
@@ -379,6 +401,16 @@ export class QueryBuilder {
             return
         }
         value.split(',').map((field: string) => {
+            const expression: string = field.trim()
+            const exp = new QueryExpand()
+
+            if (expression.substring(expression.length - 1) === ')') {
+                const parts = expression.split('(')
+                exp.entity = parts[0]
+                exp.withCount()
+            } else {
+                exp.entity = expression
+            }
             this.expand(field.trim())
         })
     }

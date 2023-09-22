@@ -14,9 +14,8 @@
   * [Paging](#paging)
   * [Filtering](#filtering)
   * [ID](#id)
-  * [_force](#_force-parameter)
-  * [_attach](#_attach-parameter)
   * [Select](#select)
+  * [Count](#count)
   * [File content](#file-content)
 
 
@@ -76,6 +75,15 @@ o.expand('company').expand('jobtitle').build()
 ```
 
 > Output `/users?$expand=company,jobtitle`
+
+To add counter to expanding parameter, add `true` as second parameter of `expand` method
+```js
+const o = new QueryBuilder('/users')
+o.expand('emails', true).build()
+```
+
+> Output `/users?$expand=company($count=true)`
+
 
 ### Limiting
 For limiting returned data, use `limit` and `offset` methods
@@ -150,26 +158,6 @@ o.id(4).build()
 ```
 > Output `/users(4)`
 
-### _force parameter
-`_force` is extra **boolean** type parameter. It will not make effect to real oData server, but you can use it in 
-development. In Laravel
-```js
-const o = new QueryBuilder('/users')
-o.force().build()
-```
-> Output `/users?_force=true`
-
->Note! Since version 1.4.0 parameter `$force` named `_force` to separate with OData convinient
-
-### _attach parameter
-`_attach` is extra **string** type parameter. It will not make effect to real oData server, but you can use it in 
-development. 
-```js
-const o = new QueryBuilder('/users')
-o.attach(['field1', 'field2']).build()
-```
-> Output `/users?_attach=field1,field2`
-
 ### Select
 Use `select` method to constrain returned fields
 ```js
@@ -178,6 +166,24 @@ o.select(['id','name']).build()
 ```
 
 > Output `/users?$select=id,name`
+
+### Count
+Use `count` method to get request for count value
+```js
+const o = new QueryBuilder('/users')
+o.count()
+```
+
+> Output `/users/$count
+
+Other-hand, if you want to make request of data with total count, you can use `inlineCount` method
+Use `count` method to get request for count value
+```js
+const o = new QueryBuilder('/users')
+o.inlineCount()
+```
+
+> Output `/users?$count=true
 
 ### File content
 Getting the file content is extra path. It will not make effect to real oData server, but you can use it in 
